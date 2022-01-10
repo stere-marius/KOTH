@@ -16,21 +16,15 @@ public class ItemBuilder {
 
     protected ItemStack itemStack;
 
-    public ItemBuilder(Material m, int amount, int data) {
-
-        if (amount <= 0) {
-            amount = 1;
-        }
-
-        this.itemStack = new ItemStack(m, amount);
+    public ItemBuilder(Material m, int amount) {
+        this.itemStack = new ItemStack(m, amount <= 0 ? 1 : amount);
     }
 
 
     public ItemBuilder(Material material) {
-
         this.itemStack = new ItemStack(material, 1);
-
     }
+
 
     public ItemBuilder(ItemStack m, int amount) {
 

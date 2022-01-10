@@ -1,13 +1,18 @@
 package ro.marius.koth.match;
 
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import ro.marius.koth.utils.PlayerUtils;
 
-public class KothMatchRunningTask extends BukkitRunnable {
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+public class KothMatchRunningTask implements Runnable {
 
     private final KothMatch kothMatch;
-
-    private int secondsLeft = 60 * 15;
+    private final KothAreaAnimation kothAreaAnimation = new KothAreaAnimation();
 
     public KothMatchRunningTask(KothMatch kothMatch) {
         this.kothMatch = kothMatch;
@@ -15,15 +20,33 @@ public class KothMatchRunningTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        this.secondsLeft--;
+        kothMatch.setSecondsLeft(kothMatch.getSecondsLeft() - 1);
 
-        if (secondsLeft == 0) {
+        if (kothMatch.getSecondsLeft() == 0) {
             kothMatch.endMatch();
-            this.cancel();
+            kothMatch.cancelMatchRunningTask();
             return;
         }
 
+        if (kothZoneContainsTwoDifferentTeams()) return;
+
+
         kothMatch.getPlayerTeam().values().forEach(this::handleTeamKothZone);
+    }
+
+    private boolean kothZoneContainsTwoDifferentTeams() {
+        Set<Player> playersInsideKothZone =
+                kothMatch
+                        .getPlayers()
+                        .stream()
+                        .filter(p -> kothMatch.getArena().getKothArea().isInsideCuboidSelection(p.getLocation()))
+                        .collect(Collectors.toSet());
+
+        Set<KothTeam> teamsInKothZone = new HashSet<>();
+
+        playersInsideKothZone.forEach(p -> teamsInKothZone.add(kothMatch.getPlayerTeam().get(p)));
+
+        return teamsInKothZone.size() >= 2;
     }
 
     private void handleTeamKothZone(KothTeam team) {
@@ -32,34 +55,37 @@ public class KothMatchRunningTask extends BukkitRunnable {
                 .stream()
                 .anyMatch(p -> kothMatch.getArena().getKothArea().isInsideCuboidSelection(p.getLocation()));
 
-        if (hasPlayerInsideKothZone) {
-            team.incrementSecondsKothCaptured();
-            return;
-        }
+        if (!hasPlayerInsideKothZone) return;
 
-        if (team.getKothSecondsCaptured() == 3) {
-            kothMatch.sendMessage("&e" + team.getName() + " has captured the KOTH zone");
-            return;
-        }
 
-        if (team.getKothSecondsCaptured() == 20) {
-            team.incrementScore();
-            kothMatch.teleportTeamPlayersToSpawn();
-            kothMatch.getPlayers().forEach(p -> PlayerUtils.resetPlayer(p, true, true));
-            kothMatch.getPlayerTeam().values().forEach(KothTeam::resetKothSecondsCaptured);
-            kothMatch.givePlayersKit();
-            kothMatch.sendMessage("&e" + team.getName() + " got a point for capturing the KOTH zone for more than 20 seconds");
-            return;
-        }
+        kothAreaAnimation.update(team, kothMatch.getArena().getKothArea());
 
-        team.resetKothSecondsCaptured();
+        Set<Block> blocksCaptured = kothMatch
+                .getArena()
+                .getKothArea()
+                .getBlocks()
+                .stream()
+                .filter(b -> b.getType() == team.getKothAreaMaterial())
+                .collect(Collectors.toSet());
+
+        boolean hasCapturedAllBlocks = blocksCaptured.size() == kothMatch.getArena().getBlocksToCapture();
+
+        if (!hasCapturedAllBlocks) return;
+
+        team.incrementScore();
+        kothMatch.teleportTeamPlayersToSpawn();
+        kothMatch.getPlayers().forEach(p -> PlayerUtils.resetPlayer(p, true, true));
+        kothMatch.givePlayersKit();
+        kothMatch.sendMessage("&e" + team.getName() + " got a point for fully capturing the KOTH zone!");
+        kothMatch
+                .getArena()
+                .getKothArea()
+                .getBlocks()
+                .stream()
+                .filter(b -> b.getType().name().endsWith("_WOOL") && b.getType() != Material.WHITE_WOOL)
+                .collect(Collectors.toSet())
+                .forEach(b -> b.setType(Material.WHITE_WOOL));
+
     }
 
-    public void setSecondsLeft(int secondsLeft) {
-        this.secondsLeft = secondsLeft;
-    }
-
-    public int getSecondsLeft() {
-        return secondsLeft;
-    }
 }

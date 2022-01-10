@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import ro.marius.koth.arena.Kit;
 import ro.marius.koth.match.KothMatch;
 import ro.marius.koth.utils.ItemBuilder;
+import ro.marius.koth.utils.StringUtils;
 
 public class KitGUI extends GUI {
 
@@ -22,13 +23,13 @@ public class KitGUI extends GUI {
     @Override
     public Inventory getInventory() {
 
-        Inventory inventory = Bukkit.createInventory(this, 9, "&eSelect a kit");
+        Inventory inventory = Bukkit.createInventory(this, 9, StringUtils.translate("&eSelect a kit"));
 
         for (int i = 0; i < kothMatch.getArena().getKits().size(); i++) {
             Kit kit = kothMatch.getArena().getKits().get(i);
             ItemStack item = new ItemBuilder(Material.IRON_SWORD)
                     .setDisplayName("&a" + kit.getName())
-                    .setLore("", "&e&lRight click to select the kit","","&e&lMiddle click to view the items of the kit")
+                    .setLore("", "&e&lRight click to select the kit", "", "&e&lMiddle click to view the items of the kit")
                     .build();
             inventory.setItem(i, item);
         }
@@ -40,7 +41,11 @@ public class KitGUI extends GUI {
     @Override
     public void onClick(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
+
         int clickedSlot = e.getSlot();
+
+        if (clickedSlot >= kothMatch.getArena().getKits().size()) return;
+
         Kit clickedKit = kothMatch.getArena().getKits().get(clickedSlot);
         e.setCancelled(true);
 
@@ -51,6 +56,6 @@ public class KitGUI extends GUI {
         }
 
         kothMatch.getPlayerKit().put(player, clickedKit);
-        player.sendMessage("&aYou selected the kit " + clickedKit.getName() + " !");
+        player.sendMessage(StringUtils.translate("&aYou selected the kit " + clickedKit.getName() + " !"));
     }
 }

@@ -4,24 +4,24 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import ro.marius.koth.KothPlugin;
 import ro.marius.koth.arena.Arena;
 import ro.marius.koth.arena.ArenaConfigurationFile;
 import ro.marius.koth.handlers.ArenaHandler;
 import ro.marius.koth.arena.ArenaSetup;
 import ro.marius.koth.utils.ItemBuilder;
+import ro.marius.koth.utils.Items;
 import ro.marius.koth.utils.StringUtils;
 
 import java.util.Optional;
 
 public class KothCommand extends AbstractCommand {
 
-    private final ArenaHandler arenaHandler;
-    private final ArenaConfigurationFile arenaConfiguration;
+    private final KothPlugin kothPlugin;
 
-    public KothCommand(ArenaHandler arenaHandler, ArenaConfigurationFile arenaConfiguration) {
+    public KothCommand(KothPlugin kothPlugin) {
         super("koth");
-        this.arenaHandler = arenaHandler;
-        this.arenaConfiguration = arenaConfiguration;
+        this.kothPlugin = kothPlugin;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class KothCommand extends AbstractCommand {
                 return;
             }
 
-            Optional<Arena> arenaOptional = arenaHandler.findArenaByName(args[1]);
+            Optional<Arena> arenaOptional = kothPlugin.getArenaHandler().findArenaByName(args[1]);
 
             if (!arenaOptional.isPresent()) {
                 player.sendMessage(StringUtils.translate("&cCould not find the arena with the name " + args[1]));
@@ -68,18 +68,14 @@ public class KothCommand extends AbstractCommand {
             ArenaSetup arenaSetup = new ArenaSetup(args[1]);
             arenaSetup.sendStepsMessage(player);
             player.sendMessage(StringUtils.translate("&eSelect the koth area bounds using the axe."));
-            ItemStack item = new ItemBuilder(Material.WOODEN_AXE)
-                    .setLore("&eUsed to select the bounds of koth area", "&eRight click to set second position",
-                            "&eLeft click to set first position")
-                    .setDisplayName("&aArena selector").build();
-            player.getInventory().addItem(item);
-            arenaHandler.getPlayerArenaSetup().put(player, arenaSetup);
+            player.getInventory().addItem(Items.KOTH_AREA_SELECTOR);
+            kothPlugin.getArenaHandler().getPlayerArenaSetup().put(player, arenaSetup);
             return;
         }
 
 
         if ("setFirstTeamSpawn".equalsIgnoreCase(args[0])) {
-            ArenaSetup arenaSetup = arenaHandler.getPlayerArenaSetup().get(player);
+            ArenaSetup arenaSetup = kothPlugin.getArenaHandler().getPlayerArenaSetup().get(player);
 
             if (arenaSetup == null) {
                 player.sendMessage(StringUtils.translate("&c&lFirst you need to use the command /koth arenaCreate arenaName"));
@@ -92,7 +88,7 @@ public class KothCommand extends AbstractCommand {
         }
 
         if ("setSecondTeamSpawn".equalsIgnoreCase(args[0])) {
-            ArenaSetup arenaSetup = arenaHandler.getPlayerArenaSetup().get(player);
+            ArenaSetup arenaSetup = kothPlugin.getArenaHandler().getPlayerArenaSetup().get(player);
 
             if (arenaSetup == null) {
                 player.sendMessage(StringUtils.translate("&c&lFirst you need to use the command /koth arenaCreate arenaName"));
@@ -107,7 +103,7 @@ public class KothCommand extends AbstractCommand {
 
         if ("setKothAreaFirstPoint".equalsIgnoreCase(args[0])) {
 
-            ArenaSetup arenaSetup = arenaHandler.getPlayerArenaSetup().get(player);
+            ArenaSetup arenaSetup = kothPlugin.getArenaHandler().getPlayerArenaSetup().get(player);
 
             if (arenaSetup == null) {
                 player.sendMessage(StringUtils.translate("&c&lFirst you need to use the command /koth arenaCreate arenaName"));
@@ -122,7 +118,7 @@ public class KothCommand extends AbstractCommand {
 
         if ("setKothAreaSecondPoint".equalsIgnoreCase(args[0])) {
 
-            ArenaSetup arenaSetup = arenaHandler.getPlayerArenaSetup().get(player);
+            ArenaSetup arenaSetup = kothPlugin.getArenaHandler().getPlayerArenaSetup().get(player);
 
             if (arenaSetup == null) {
                 player.sendMessage(StringUtils.translate("&c&lFirst you need to use the command /koth arenaCreate arenaName"));
@@ -136,16 +132,16 @@ public class KothCommand extends AbstractCommand {
         }
 
         if ("finish".equalsIgnoreCase(args[0])) {
-            ArenaSetup arenaSetup = arenaHandler.getPlayerArenaSetup().get(player);
+            ArenaSetup arenaSetup = kothPlugin.getArenaHandler().getPlayerArenaSetup().get(player);
 
             if (arenaSetup == null) {
                 player.sendMessage(StringUtils.translate("&c&lFirst you need to use the command /koth arenaCreate arenaName"));
                 return;
             }
 
-            Arena createdArena = arenaSetup.createArena();
-            arenaConfiguration.saveArena(createdArena);
-            arenaHandler.getArenas().add(createdArena);
+            Arena createdArena = arenaSetup.createArena(kothPlugin);
+            kothPlugin.getArenaConfiguration().saveArena(createdArena);
+            kothPlugin.getArenaHandler().getArenas().add(createdArena);
             player.sendMessage(StringUtils.translate("&a&lThe arena has been successfully created!"));
         }
 

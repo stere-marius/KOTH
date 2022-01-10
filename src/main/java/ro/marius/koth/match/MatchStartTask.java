@@ -1,12 +1,10 @@
 package ro.marius.koth.match;
 
-import org.bukkit.scheduler.BukkitRunnable;
+import ro.marius.koth.utils.PlayerUtils;
 
-public class MatchStartTask extends BukkitRunnable {
+public class MatchStartTask implements Runnable {
 
     private final KothMatch kothMatch;
-    private int startingSeconds;
-    private KothMatchState matchState =  KothMatchState.WAITING;
 
     public MatchStartTask(KothMatch kothMatch) {
         this.kothMatch = kothMatch;
@@ -14,31 +12,30 @@ public class MatchStartTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        startingSeconds--;
+        kothMatch.setStartingSeconds(kothMatch.getStartingSeconds() - 1);
 
-        if(startingSeconds == 0){
+        if (kothMatch.getStartingSeconds() == 0) {
             kothMatch.teleportTeamPlayersToSpawn();
             kothMatch.givePlayersKit();
             kothMatch.sendMessage("&a&lKOTH started");
+            kothMatch.setStartingSeconds(15);
+            kothMatch.setState(KothMatchState.RUNNING);
+            kothMatch.startRunningMatchTask();
+            kothMatch.cancelStartTask();
             return;
         }
 
-        if (startingSeconds % 5 == 0) {
-            kothMatch.sendMessage("&a&lKOTH starts in " + startingSeconds);
+
+        if (kothMatch.getStartingSeconds() % 5 == 0) {
+            kothMatch.sendMessage("&a&lKOTH starts in " + kothMatch.getStartingSeconds());
+            kothMatch.getPlayers().forEach(PlayerUtils::playSoundCountdown);
         }
 
-    }
+        if (kothMatch.getStartingSeconds() < 5) {
+            kothMatch.sendMessage("&a&lKOTH starts in " + kothMatch.getStartingSeconds());
+            kothMatch.getPlayers().forEach(PlayerUtils::playSoundCountdown);
+        }
 
-    public int getStartingSeconds() {
-        return startingSeconds;
-    }
-
-    public KothMatchState getState() {
-        return matchState;
-    }
-
-    public void setMatchState(KothMatchState matchState) {
-        this.matchState = matchState;
     }
 
 

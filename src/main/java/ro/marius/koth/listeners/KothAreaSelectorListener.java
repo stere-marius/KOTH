@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import ro.marius.koth.handlers.ArenaHandler;
 import ro.marius.koth.arena.ArenaSetup;
+import ro.marius.koth.utils.Items;
 import ro.marius.koth.utils.StringUtils;
 
 public class KothAreaSelectorListener implements Listener {
@@ -25,25 +26,15 @@ public class KothAreaSelectorListener implements Listener {
         Player p = e.getPlayer();
         ArenaSetup arenaSetup = arenaHandler.getPlayerArenaSetup().get(p);
 
-        if (arenaSetup == null) {
-            return;
-        }
+        if (arenaSetup == null) return;
 
-        ItemStack handItem = p.getItemOnCursor();
+        ItemStack handItem = e.getItem();
 
-        if (handItem == null) {
-            return;
-        }
+        if(handItem == null) return;
 
-        if (e.getClickedBlock() == null) {
-            return;
-        }
+        if (e.getClickedBlock() == null) return;
 
-        if (!handItem.hasItemMeta()) {
-            return;
-        }
-
-        if (!handItem.getItemMeta().getDisplayName().equals(StringUtils.translate("&aArena selector"))) {
+        if (!handItem.isSimilar(Items.KOTH_AREA_SELECTOR)) {
             return;
         }
 

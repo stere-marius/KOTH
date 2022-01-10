@@ -8,6 +8,7 @@ import net.minecraft.server.v1_16_R3.IChatBaseComponent;
 import net.minecraft.server.v1_16_R3.PacketPlayOutTitle;
 import net.minecraft.server.v1_16_R3.PlayerConnection;
 import org.bukkit.GameMode;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
@@ -63,6 +64,10 @@ public class PlayerUtils {
             connection.sendPacket(packetPlayOutTitle);
         }
 
+    }
+
+    public static void playSoundCountdown(Player player){
+        player.playSound(player.getEyeLocation(), Sound.BLOCK_NOTE_BLOCK_HAT, 1, 1);
     }
 
     public static void sendSuggestCommandMessage(Player p, String command, String text, String displayHoverMessage) {

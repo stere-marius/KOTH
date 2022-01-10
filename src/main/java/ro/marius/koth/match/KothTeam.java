@@ -2,6 +2,7 @@ package ro.marius.koth.match;
 
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
@@ -12,33 +13,22 @@ public class KothTeam {
     private final String name;
     private final Set<Player> players = new HashSet<>();
     private final Location spawn;
+    private final Material kothAreaMaterial;
 
     private int score;
-    private int kothSecondsCaptured;
 
-    public KothTeam(String name, Location spawn) {
+    public KothTeam(String name, Location spawn, Material kothAreaMaterial) {
         this.name = name;
         this.spawn = spawn;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
+        this.kothAreaMaterial = kothAreaMaterial;
     }
 
     public int getScore() {
         return score;
     }
 
-    public int getKothSecondsCaptured() {
-        return kothSecondsCaptured;
-    }
-
-    public void incrementSecondsKothCaptured() {
-        this.kothSecondsCaptured++;
-    }
-
-    public void resetKothSecondsCaptured() {
-        this.kothSecondsCaptured = 0;
+    public Material getKothAreaMaterial() {
+        return kothAreaMaterial;
     }
 
     public void resetScore() {

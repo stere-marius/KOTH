@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import ro.marius.koth.KothPlugin;
+import ro.marius.koth.arena.Kit;
 import ro.marius.koth.utils.PlayerUtils;
 
 public class PlayerRespawnTask extends BukkitRunnable {
@@ -27,6 +28,7 @@ public class PlayerRespawnTask extends BukkitRunnable {
 
         if (this.secondsLeft == 0) {
             respawnPlayer();
+            cancel();
             return;
         }
 
@@ -50,5 +52,8 @@ public class PlayerRespawnTask extends BukkitRunnable {
         player.teleport(team.getSpawn());
         kothMatch.removeSpectator(player);
         PlayerUtils.resetPlayer(player, true, true);
+        Kit playerKit = kothMatch.getPlayerKit().get(player);
+        player.getInventory().setContents(playerKit.getItems());
+        player.getInventory().setArmorContents(playerKit.getArmor());
     }
 }

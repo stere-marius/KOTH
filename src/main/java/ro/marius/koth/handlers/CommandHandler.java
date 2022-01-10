@@ -14,10 +14,10 @@ import java.util.Set;
 
 public class CommandHandler {
 
-    public static void registerCommands(ArenaHandler arenaHandler, ArenaConfigurationFile arenaConfiguration) {
+    public static void registerCommands(KothPlugin kothPlugin) {
 
         Set<AbstractCommand> abstractCommand = new HashSet<>();
-        abstractCommand.add(new KothCommand(arenaHandler, arenaConfiguration));
+        abstractCommand.add(new KothCommand(kothPlugin));
 
         try {
             Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");

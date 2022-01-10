@@ -1,6 +1,8 @@
 package ro.marius.koth.arena;
 
+import net.minecraft.server.v1_16_R3.PlayerInventory;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import ro.marius.koth.utils.ItemBuilder;
@@ -40,22 +42,24 @@ public class Kit {
                 new ItemBuilder(Material.STONE_SWORD).setUnbreakable().build()
         },
                 new ItemStack[]{
-                        new ItemBuilder(Material.DIAMOND_HELMET).setUnbreakable().build(),
-                        new ItemBuilder(Material.DIAMOND_CHESTPLATE).setUnbreakable().build(),
-                        new ItemBuilder(Material.DIAMOND_LEGGINGS).setUnbreakable().build(),
                         new ItemBuilder(Material.DIAMOND_BOOTS).setUnbreakable().build(),
+                        new ItemBuilder(Material.DIAMOND_LEGGINGS).setUnbreakable().build(),
+                        new ItemBuilder(Material.DIAMOND_CHESTPLATE).setUnbreakable().build(),
+                        new ItemBuilder(Material.DIAMOND_HELMET).setUnbreakable().build(),
                 });
 
         Kit ninjaKit = new Kit("Ninja", new ItemStack[]{
                 new ItemBuilder(Material.IRON_SWORD).setUnbreakable().build(),
-                new ItemBuilder(Material.BOW).addEnchant(Enchantment.ARROW_DAMAGE, 5).setUnbreakable().build()
+                new ItemBuilder(Material.BOW).addEnchant(Enchantment.ARROW_DAMAGE, 5).setUnbreakable().build(),
+                new ItemBuilder(Material.ARROW, 64).setUnbreakable().build()
         },
                 new ItemStack[]{
-                        new ItemBuilder(Material.IRON_HELMET).setUnbreakable().build(),
-                        new ItemBuilder(Material.IRON_CHESTPLATE).setUnbreakable().build(),
-                        new ItemBuilder(Material.IRON_LEGGINGS).setUnbreakable().build(),
                         new ItemBuilder(Material.IRON_BOOTS).setUnbreakable().build(),
+                        new ItemBuilder(Material.IRON_LEGGINGS).setUnbreakable().build(),
+                        new ItemBuilder(Material.IRON_CHESTPLATE).setUnbreakable().build(),
+                        new ItemBuilder(Material.IRON_HELMET).setUnbreakable().build(),
                 });
+
 
         kits.add(warriorKit);
         kits.add(ninjaKit);

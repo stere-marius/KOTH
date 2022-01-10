@@ -1,11 +1,14 @@
 package ro.marius.koth.utils;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CuboidSelection {
 
@@ -15,6 +18,8 @@ public class CuboidSelection {
     private Location positionOne;
     private Location positionTwo;
     private List<BlockState> blocksState = new ArrayList<>();
+
+    private Map<Location, Material> locationMaterial = new HashMap<>();
 
     public CuboidSelection(Location positionOne, Location positionTwo) {
         this.positionOne = positionOne;
@@ -29,12 +34,17 @@ public class CuboidSelection {
                     Block b = positionOne.getWorld().getBlockAt(x, y, z);
                     this.blocks.add(b);
                     this.blocksState.add(b.getState());
+                    locationMaterial.put(b.getLocation(), b.getType());
                 }
             }
 
         }
         return this;
 
+    }
+
+    public Map<Location, Material> getLocationMaterial() {
+        return locationMaterial;
     }
 
     @Override

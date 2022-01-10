@@ -1,6 +1,7 @@
 package ro.marius.koth.arena;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -14,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public class ArenaConfigurationFile {
@@ -21,8 +23,11 @@ public class ArenaConfigurationFile {
     private final File arenaFile;
     private final FileConfiguration arenaConfigurationFile;
 
-    public ArenaConfigurationFile() {
-        this.arenaFile = new File(JavaPlugin.getPlugin(KothPlugin.class).getDataFolder(), "arenas.yml");
+    private final KothPlugin kothPlugin;
+
+    public ArenaConfigurationFile(KothPlugin kothPlugin) {
+        this.kothPlugin = kothPlugin;
+        this.arenaFile = new File(kothPlugin.getDataFolder(), "arenas.yml");
         this.arenaConfigurationFile = YamlConfiguration.loadConfiguration(arenaFile);
     }
 
@@ -36,14 +41,15 @@ public class ArenaConfigurationFile {
 
         if (configurationSection.getKeys(false).isEmpty()) return Collections.emptySet();
 
-
         for (String arenaKey : configurationSection.getKeys(false)) {
             String configKey = "Arenas." + arenaKey;
             CuboidSelection kothArea = getKothAreaFromConfiguration(configKey);
+            Collections.shuffle(kothArea.getBlocks());
             Set<KothTeam> kothTeams = getTeamsFromConfiguration(configKey + ".Teams");
-            Arena arenaObject = new Arena(arenaKey, kothArea);
+            Arena arenaObject = new Arena(arenaKey, kothArea, kothPlugin);
             arenaObject.getKits().addAll(Kit.getDefaultKits());
             arenaObject.getTeams().addAll(kothTeams);
+            arenas.add(arenaObject);
         }
 
         return arenas;
@@ -90,7 +96,8 @@ public class ArenaConfigurationFile {
 
     private KothTeam getTeamFromConfiguration(String path, String teamName) {
         Location teamSpawn = LocationUtils.getConvertedStringToLocation(arenaConfigurationFile.getString(path + ".Spawn"));
-        return new KothTeam(teamName, teamSpawn);
+        Material kothAreaMaterial = Material.valueOf(arenaConfigurationFile.getString(path + ".KothAreaMaterial"));
+        return new KothTeam(teamName, teamSpawn, kothAreaMaterial);
     }
 
 
