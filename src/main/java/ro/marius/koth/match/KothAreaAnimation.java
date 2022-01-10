@@ -13,13 +13,6 @@ import java.util.stream.Collectors;
 
 public class KothAreaAnimation {
 
-    // daca nu e nicio echipa si daca exista block-uri de facut restore, le dau restore unul cate unul
-    // daca exista echipa dau update la block-uri
-
-    public void restoreKothArea(CuboidSelection cuboidSelection) {
-
-    }
-
     public void update(KothTeam team, CuboidSelection cuboidSelection) {
 
         List<Block> woolBlocks = cuboidSelection

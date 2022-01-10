@@ -1,5 +1,6 @@
 package ro.marius.koth.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,6 +10,7 @@ import ro.marius.koth.KothPlugin;
 import ro.marius.koth.match.KothTeam;
 import ro.marius.koth.handlers.KothMatchHandler;
 import ro.marius.koth.match.KothMatch;
+import ro.marius.koth.utils.PlayerUtils;
 
 public class PlayerQuitListener implements Listener {
 
@@ -36,5 +38,7 @@ public class PlayerQuitListener implements Listener {
         kothMatch.getPlayerTeam().remove(player);
         kothMatchHandler.getPlayerMatch().remove(player.getUniqueId());
         kothMatch.checkMatchEnd();
+        PlayerUtils.resetPlayer(player, true, true);
+        player.teleport(Bukkit.getWorld("world").getSpawnLocation());
     }
 }

@@ -27,12 +27,12 @@ public class MatchStartTask implements Runnable {
 
 
         if (kothMatch.getStartingSeconds() % 5 == 0) {
-            kothMatch.sendMessage("&a&lKOTH starts in " + kothMatch.getStartingSeconds());
+            kothMatch.sendMessage("&a&lKOTH is starting in " + kothMatch.getStartingSeconds());
             kothMatch.getPlayers().forEach(PlayerUtils::playSoundCountdown);
         }
 
         if (kothMatch.getStartingSeconds() < 5) {
-            kothMatch.sendMessage("&a&lKOTH starts in " + kothMatch.getStartingSeconds());
+            kothMatch.sendMessage("&a&lKOTH is starting in " + kothMatch.getStartingSeconds());
             kothMatch.getPlayers().forEach(PlayerUtils::playSoundCountdown);
         }
 

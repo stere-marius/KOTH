@@ -51,6 +51,7 @@ public class KothPlugin extends JavaPlugin {
         pluginManager.registerEvents(new PlayerClickInventory(kothMatchHandler), this);
         pluginManager.registerEvents(new PlayerInteractItems(kothMatchHandler), this);
         pluginManager.registerEvents(new ArrowHitListener(kothMatchHandler), this);
+        pluginManager.registerEvents(new SpectatorDamage(kothMatchHandler), this);
         pluginManager.registerEvents(new PlayerFoodChange(), this);
     }
 

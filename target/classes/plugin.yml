@@ -1,5 +1,0 @@
-name: KOTH
-main: ro.marius.koth.KothPlugin
-version: 1.0
-api-version: 1.13
-softdepend: [Multiverse, Multiverse-Core]

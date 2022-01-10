@@ -17,12 +17,13 @@ import ro.marius.koth.utils.PlayerUtils;
 import ro.marius.koth.utils.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class KothMatch {
 
     private KothMatchState state = KothMatchState.WAITING;
     private int startingSeconds = 10;
-    private int secondsLeft = 10;
+    private int secondsLeft = 60 * 3;
     private final Arena arena;
     private final Set<Player> spectators = new HashSet<>();
     private final Map<Player, KothTeam> playerTeam = new HashMap<>();
@@ -70,6 +71,7 @@ public class KothMatch {
         player.teleport(Bukkit.getWorld("world").getSpawnLocation());
         KothTeam team = playerTeam.get(player);
         team.getPlayers().remove(player);
+        playerTeam.remove(player);
         plugin.getKothMatchHandler().getPlayerMatch().remove(player.getUniqueId());
         player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
         checkCancelOfStartingTask();
@@ -79,6 +81,8 @@ public class KothMatch {
         boolean isEmptyTeam = arena.getTeams().stream().anyMatch(t -> t.getPlayers().isEmpty());
 
         if (isEmptyTeam) return;
+
+        if (state == KothMatchState.STARTING) return;
 
         startMatch();
     }
@@ -138,12 +142,13 @@ public class KothMatch {
 
     private void handleWinningTeam() {
 
-        boolean everyTeamHasTheSameScore = playerTeam
-                .values()
-                .stream()
-                .map(KothTeam::getScore)
-                .distinct()
-                .count() <= 1;
+        boolean everyTeamHasTheSameScore =
+                playerTeam.values().size() >= 2 && playerTeam
+                        .values()
+                        .stream()
+                        .map(KothTeam::getScore)
+                        .distinct()
+                        .count() <= 1;
 
         if (everyTeamHasTheSameScore) {
             getPlayers().forEach(p -> PlayerUtils.sendTitle(p, 20, 20, 20, "&e&lIT'S A TIE!", "", true));
@@ -181,7 +186,18 @@ public class KothMatch {
         });
 
         state = KothMatchState.WAITING;
-        setSecondsLeft(10);
+        setSecondsLeft(60 * 3);
+        resetKothAreaWoolBlocks();
+    }
+
+    public void resetKothAreaWoolBlocks() {
+        getArena()
+                .getKothArea()
+                .getBlocks()
+                .stream()
+                .filter(b -> b.getType().name().endsWith("WOOL"))
+                .collect(Collectors.toSet())
+                .forEach(b -> b.setType(Material.WHITE_WOOL));
     }
 
     public void startRunningMatchTask() {
@@ -194,6 +210,7 @@ public class KothMatch {
 
     public void addToRespawnTask(Player player) {
         PlayerUtils.resetPlayer(player, true, true);
+        player.teleport(getPlayerTeam().get(player).getSpawn());
         spectators.add(player);
         getPlayers().forEach(p -> p.hidePlayer(JavaPlugin.getPlugin(KothPlugin.class), player));
         new PlayerRespawnTask(player, this).runTaskTimer(plugin, 20L, 20L);
@@ -266,7 +283,7 @@ public class KothMatch {
         boolean isOnlyOneTeamLeft = getPlayerTeam()
                 .values()
                 .stream()
-                .filter(t -> t.getPlayers().isEmpty())
+                .filter(t -> !t.getPlayers().isEmpty())
                 .count() == 1;
 
         if (isOnlyOneTeamLeft) {

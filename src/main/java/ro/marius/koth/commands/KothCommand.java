@@ -1,5 +1,6 @@
 package ro.marius.koth.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -54,6 +55,25 @@ public class KothCommand extends AbstractCommand {
 
             Arena arena = arenaOptional.get();
             arena.getKothMatch().addPlayer(player);
+
+            return;
+        }
+
+        if ("joinAll".equalsIgnoreCase(args[0])) {
+            if (args.length < 2) {
+                player.sendMessage(StringUtils.translate("&c&lInsufficient arguments: /koth join <arenaName>"));
+                return;
+            }
+
+            Optional<Arena> arenaOptional = kothPlugin.getArenaHandler().findArenaByName(args[1]);
+
+            if (!arenaOptional.isPresent()) {
+                player.sendMessage(StringUtils.translate("&cCould not find the arena with the name " + args[1]));
+                return;
+            }
+
+            Arena arena = arenaOptional.get();
+            Bukkit.getOnlinePlayers().forEach(p -> arena.getKothMatch().addPlayer(p));
 
             return;
         }

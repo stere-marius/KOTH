@@ -30,7 +30,6 @@ public class KothMatchRunningTask implements Runnable {
 
         if (kothZoneContainsTwoDifferentTeams()) return;
 
-
         kothMatch.getPlayerTeam().values().forEach(this::handleTeamKothZone);
     }
 
@@ -55,11 +54,6 @@ public class KothMatchRunningTask implements Runnable {
                 .stream()
                 .anyMatch(p -> kothMatch.getArena().getKothArea().isInsideCuboidSelection(p.getLocation()));
 
-        if (!hasPlayerInsideKothZone) return;
-
-
-        kothAreaAnimation.update(team, kothMatch.getArena().getKothArea());
-
         Set<Block> blocksCaptured = kothMatch
                 .getArena()
                 .getKothArea()
@@ -67,6 +61,12 @@ public class KothMatchRunningTask implements Runnable {
                 .stream()
                 .filter(b -> b.getType() == team.getKothAreaMaterial())
                 .collect(Collectors.toSet());
+
+        team.setBlocksCaptured(blocksCaptured.size());
+
+        if (!hasPlayerInsideKothZone) return;
+
+        kothAreaAnimation.update(team, kothMatch.getArena().getKothArea());
 
         boolean hasCapturedAllBlocks = blocksCaptured.size() == kothMatch.getArena().getBlocksToCapture();
 
@@ -77,14 +77,7 @@ public class KothMatchRunningTask implements Runnable {
         kothMatch.getPlayers().forEach(p -> PlayerUtils.resetPlayer(p, true, true));
         kothMatch.givePlayersKit();
         kothMatch.sendMessage("&e" + team.getName() + " got a point for fully capturing the KOTH zone!");
-        kothMatch
-                .getArena()
-                .getKothArea()
-                .getBlocks()
-                .stream()
-                .filter(b -> b.getType().name().endsWith("_WOOL") && b.getType() != Material.WHITE_WOOL)
-                .collect(Collectors.toSet())
-                .forEach(b -> b.setType(Material.WHITE_WOOL));
+        kothMatch.resetKothAreaWoolBlocks();
 
     }
 

@@ -1,5 +1,6 @@
 package ro.marius.koth.arena;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -97,7 +98,8 @@ public class ArenaConfigurationFile {
     private KothTeam getTeamFromConfiguration(String path, String teamName) {
         Location teamSpawn = LocationUtils.getConvertedStringToLocation(arenaConfigurationFile.getString(path + ".Spawn"));
         Material kothAreaMaterial = Material.valueOf(arenaConfigurationFile.getString(path + ".KothAreaMaterial"));
-        return new KothTeam(teamName, teamSpawn, kothAreaMaterial);
+        ChatColor chatColor = ChatColor.valueOf(arenaConfigurationFile.getString(path + ".ChatColor"));
+        return new KothTeam(teamName, teamSpawn, kothAreaMaterial, chatColor);
     }
 
 

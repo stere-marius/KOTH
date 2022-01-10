@@ -1,5 +1,6 @@
 package ro.marius.koth.arena;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -69,9 +70,9 @@ public class ArenaSetup {
 
         Arena arena = new Arena(arenaName, cuboidSelection, kothPlugin);
 
-        KothTeam redTeam = new KothTeam("Red", firstTeamSpawn, Material.RED_WOOL);
+        KothTeam redTeam = new KothTeam("Red", firstTeamSpawn, Material.RED_WOOL, ChatColor.RED);
 
-        KothTeam blueTeam = new KothTeam("Blue",  secondTeamSpawn, Material.BLUE_WOOL);
+        KothTeam blueTeam = new KothTeam("Blue", secondTeamSpawn, Material.BLUE_WOOL, ChatColor.BLUE);
 
         arena.getTeams().add(redTeam);
         arena.getTeams().add(blueTeam);

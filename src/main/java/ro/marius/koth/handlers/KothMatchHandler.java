@@ -41,14 +41,8 @@ public class KothMatchHandler {
                 player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
             });
 
-            match
-                    .getArena()
-                    .getKothArea()
-                    .getBlocks()
-                    .stream()
-                    .filter(b -> b.getType().name().endsWith("WOOL"))
-                    .collect(Collectors.toSet())
-                    .forEach(b -> b.setType(Material.WHITE_WOOL));
+
+            match.resetKothAreaWoolBlocks();
         });
 
 
